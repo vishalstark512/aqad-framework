@@ -3,7 +3,7 @@ import numpy as np
 from aqad.core import AQADFramework
 from aqad.utils import load_config, get_model, get_quantization_scheme
 from aqad.thresholding import AdaptiveThreshold
-from data.data_loader import load_data, preprocess_data, split_data
+from data.data_loader import load_and_preprocess, DataLoader
 from attacks.fgsm import fgsm_attack
 
 def main(config_path: str, data_path: str):
@@ -11,9 +11,12 @@ def main(config_path: str, data_path: str):
     config = load_config(config_path)
 
     # Load and preprocess data
-    X, y = load_data(data_path)
-    X, y = preprocess_data(X, y)
-    X_train, X_test, y_train, y_test = split_data(X, y)
+    categorical_columns = config.get('categorical_columns', [])
+    numerical_columns = config.get('numerical_columns', [])
+    X, y = load_and_preprocess(data_path, categorical_columns, numerical_columns)
+    
+    loader = DataLoader(categorical_columns, numerical_columns)
+    X_train, X_test, y_train, y_test = loader.split_data(X, y)
 
     # Initialize base model
     base_model = get_model(config['base_model'])
@@ -28,7 +31,8 @@ def main(config_path: str, data_path: str):
     threshold_model = AdaptiveThreshold(get_model(config['threshold_model']))
 
     # Create AQAD framework
-    aqad = AQADFramework(base_model, quantization_schemes, aed_models, threshold_model)
+    aqad = AQADFramework(base_model, quantization_schemes, aed_models, threshold_model, 
+                         categorical_columns=list(range(len(categorical_columns))))
 
     # Train base model
     base_model.fit(X_train, y_train)

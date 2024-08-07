@@ -6,19 +6,21 @@ from .thresholding import AdaptiveThreshold
 
 class AQADFramework:
     def __init__(self, base_model: Any, quantization_schemes: List[Any], 
-                 aed_models: List[Any], threshold_model: Any):
+                 aed_models: List[Any], threshold_model: Any, 
+                 categorical_columns: List[int] = None):
         self.base_model = base_model
         self.quantization_schemes = quantization_schemes
         self.aed_ensemble = AEDEnsemble(aed_models)
         self.threshold_model = threshold_model
+        self.categorical_columns = categorical_columns
 
     def fit(self, X: np.ndarray, y: np.ndarray):
         # Apply quantization schemes
-        X_quantized = apply_quantization_schemes(X, self.quantization_schemes)
+        X_quantized = apply_quantization_schemes(X, self.quantization_schemes, self.categorical_columns)
         
         # Generate logits
-        original_logits = self.base_model.predict(X)
-        quantized_logits = [self.base_model.predict(X_q) for X_q in X_quantized]
+        original_logits = self.base_model.predict_proba(X)
+        quantized_logits = [self.base_model.predict_proba(X_q) for X_q in X_quantized]
         
         # Compute logit differences
         logit_diffs = self._compute_logit_differences(original_logits, quantized_logits)
@@ -32,11 +34,11 @@ class AQADFramework:
 
     def predict(self, X: np.ndarray) -> np.ndarray:
         # Apply quantization schemes
-        X_quantized = apply_quantization_schemes(X, self.quantization_schemes)
+        X_quantized = apply_quantization_schemes(X, self.quantization_schemes, self.categorical_columns)
         
         # Generate logits
-        original_logits = self.base_model.predict(X)
-        quantized_logits = [self.base_model.predict(X_q) for X_q in X_quantized]
+        original_logits = self.base_model.predict_proba(X)
+        quantized_logits = [self.base_model.predict_proba(X_q) for X_q in X_quantized]
         
         # Compute logit differences
         logit_diffs = self._compute_logit_differences(original_logits, quantized_logits)
@@ -51,7 +53,5 @@ class AQADFramework:
 
     def _compute_logit_differences(self, original_logits: np.ndarray, 
                                    quantized_logits: List[np.ndarray]) -> np.ndarray:
-        # Implement logit difference computation
-        # This is a placeholder and should be implemented based on your specific approach
         diffs = [original_logits - q_logits for q_logits in quantized_logits]
         return np.concatenate(diffs, axis=1)
