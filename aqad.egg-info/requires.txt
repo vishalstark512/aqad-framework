@@ -1,0 +1,6 @@
+torch
+pyyaml
+jupyter
+numpy
+pandas
+scikit-learn

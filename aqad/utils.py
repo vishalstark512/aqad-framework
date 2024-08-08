@@ -30,5 +30,8 @@ def get_quantization_scheme(scheme_config: Dict[str, Any]):
     elif scheme_type == 'quantile':
         from .quantization import quantile_quantization
         return lambda X: quantile_quantization(X, **scheme_params)
+    elif scheme_type == 'adaptive':
+        from .quantization import adaptive_quantization
+        return lambda X: adaptive_quantization(X, **scheme_params)
     else:
         raise ValueError(f"Unsupported quantization scheme: {scheme_type}")

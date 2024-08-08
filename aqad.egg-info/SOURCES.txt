@@ -1,0 +1,13 @@
+README.md
+setup.py
+aqad/__init__.py
+aqad/aed.py
+aqad/core.py
+aqad/quantization.py
+aqad/thresholding.py
+aqad/utils.py
+aqad.egg-info/PKG-INFO
+aqad.egg-info/SOURCES.txt
+aqad.egg-info/dependency_links.txt
+aqad.egg-info/requires.txt
+aqad.egg-info/top_level.txt

@@ -1,0 +1,10 @@
+Metadata-Version: 2.1
+Name: aqad
+Version: 0.1
+Requires-Python: >=3.9
+Requires-Dist: torch
+Requires-Dist: pyyaml
+Requires-Dist: jupyter
+Requires-Dist: numpy
+Requires-Dist: pandas
+Requires-Dist: scikit-learn
