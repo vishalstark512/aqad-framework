@@ -1,3 +1,11 @@
+data:
+  categorical_columns:
+    - column1
+    - column2
+  numerical_columns:
+    - column3
+    - column4
+
 base_model:
   type: "RandomForestClassifier"
   params:
@@ -5,12 +13,16 @@ base_model:
     max_depth: 10
 
 quantization_schemes:
-  - type: "uniform"
+  - type: "adaptive"
     params:
-      num_bins: 10
-  - type: "quantile"
+      n_bins: 10
+      encode: "ordinal"
+      strategy: "uniform"
+  - type: "adaptive"
     params:
-      num_quantiles: 10
+      n_bins: 20
+      encode: "ordinal"
+      strategy: "quantile"
 
 aed_models:
   - type: "RandomForestClassifier"
